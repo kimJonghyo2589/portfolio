@@ -19,9 +19,9 @@
 ## 🎯 팀 전체 목표
 CodeMoa는 개발자 생태계에서 필요한 **정보 공유**, **협업 기회 제공**, **취업 연결**을 한곳에서 해결하는 것을 목표로 했습니다.  
 주요 기능은 다음과 같습니다:
-1. **커뮤니티**: 개발 관련 게시판, 댓글, 좋아요 기능
-2. **채용 정보 제공**: Open API 기반 채용 공고 수집·검색
-3. **팀 매칭**: 프로젝트 구인/구직 게시판
+1. **커뮤니티**: 개발 관련 게시판, 댓글, 좋아요 기능  
+2. **채용 정보 제공**: Open API 기반 채용 공고 수집·검색  
+3. **팀 매칭**: 프로젝트 구인/구직 게시판  
 4. **회원 인증 및 권한 관리**: Spring Security 기반 로그인/회원가입
 
 ---
@@ -52,15 +52,15 @@ CodeMoa는 개발자 생태계에서 필요한 **정보 공유**, **협업 기�
       │
       ▼
 [MySQL DB]
+
 ```
 
-## 🗂️ 시스템 아키텍처
-# 1. 레포지토리 클론
-git clone https://github.com/orionrich1/codemoa.git
+---
 
-# 2. 프로젝트 폴더로 이동
-cd codemoa
-
-# 3. 실행
+## 실행 방법
+git clone https://github.com/kimJonghyo2589/portfolio.git
+cd portfolio/codemoa
 ./gradlew bootRun
+
+
 
