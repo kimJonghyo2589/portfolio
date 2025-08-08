@@ -63,8 +63,6 @@ CodeMoa는 개발자 생태계에서 필요한 **정보 공유**, **협업 기�
 git clone https://github.com/kimJonghyo2589/portfolio.git
 cd portfolio/codemoa
 ./gradlew bootRun
-
-
 ```
 
 
