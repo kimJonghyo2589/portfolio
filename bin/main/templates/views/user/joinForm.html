@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<div layout:fragment="content">
+
+	<div class="container my-5">
+		<div class="row justify-content-center">
+			<div class="col-md-8 col-lg-7">
+				<div class="card shadow-sm border-0">
+					<div class="card-body p-4 p-sm-5">
+						<div class="text-center mb-5">
+							<h2 class="mb-2">회원가입</h2>
+							<p class="text-secondary">CodeMoa의 회원이 되어보세요.</p>
+						</div>
+
+						<form action="/join" method="POST" id="userJoinForm">
+							<div class="form-floating mb-3">
+								<input type="text" class="form-control" id="userId" name="userId" placeholder="아이디" required>
+								<label for="userId">아이디</label>
+								<div class="form-text ps-2">영문, 숫자 조합 6~12자로 입력해주세요.</div>
+							</div>
+			
+							<div class="form-floating mb-3">
+								<input type="password" class="form-control" id="pass" name="pass" placeholder="비밀번호" required>
+								<label for="pass">비밀번호</label>
+							</div>
+			
+							<div class="form-floating mb-4">
+								<input type="password" class="form-control" id="passConfirm" name="passConfirm" placeholder="비밀번호 확인" required>
+								<label for="passConfirm">비밀번호 확인</label>
+							</div>
+			
+							<div class="form-floating mb-3">
+								<input type="text" class="form-control" id="name" name="name" placeholder="이름" required>
+								<label for="name">이름</label>
+							</div>
+			
+							<div class="form-floating mb-3">
+								<input type="text" class="form-control" id="nickname" name="nickname" placeholder="닉네임" required>
+								<label for="nickname">닉네임</label>
+							</div>
+			
+							<div class="form-floating mb-3">
+								<input type="email" class="form-control" id="email" name="email" placeholder="이메일" required>
+								<label for="email">이메일</label>
+							</div>
+							
+							<div class="form-floating mb-4">
+								<input type="tel" class="form-control" id="mobile" name="mobile" placeholder="휴대폰 번호" required>
+								<label for="mobile">휴대폰 번호</label>
+								<div class="form-text ps-2">'-' 없이 숫자만 입력하세요.</div>
+							</div>
+			
+							<div class="d-grid">
+								<button type="submit" class="btn btn-primary btn-lg">가입하기</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+ 	<script>
+ 		// AI 웹 퍼블리셔: 이 스크립트 블록은 기능의 핵심이므로 절대 삭제하거나 수정하지 않습니다.
+ 		$(function(){
+ 			// Form 제출될 때 
+ 			$('#userJoinForm').submit(function(e){
+ 				e.preventDefault();
+ 				
+ 				// 비밀번호 유효성 검사
+ 				if ($("#pass").val() != $("#passConfirm").val() || $("#pass").val() == "") {
+ 					alert("비밀번호가 일치하지 않습니다.");
+ 					$("#pass").focus();
+ 					return false;
+ 				}
+ 				
+ 				// 아이디 중복 체크
+ 				const userId = $("#userId").val();
+ 				$.ajax({
+				  url: '/checkId',        		
+				  method: 'POST',           	
+				  data: { userId: userId },   	
+				  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+				  dataType: 'json',         	
+				  success: function(response) {
+				    if(response){
+	 					alert("이미 존재하는 아이디입니다.");
+	 					$("#userId").focus();
+	 					return false;
+				    }
+				    else{
+				    	 $('#userJoinForm')[0].submit();  
+				    }
+				  },
+				  error: function(xhr, status, error) {
+				    console.error(error);
+				  }
+				});
+ 			});
+ 			
+ 			// 전화번호 정규식 패턴
+ 			$('#mobile').on('input', function() {
+ 				this.value = this.value.replace(/[^0-9]/g, '');
+ 			});
+ 		});
+ 	</script>
+</div>
+
+</html>

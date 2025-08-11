@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>채용 공고 리스트</title>
+    <script src="/js/employmentList.js" defer></script>
+</head>
+
+<div layout:fragment="content">
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold fs-2">채용 공고 목록</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form method="get" th:action="@{/employmentList}">
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                <div class="flex-shrink-0" style="width: 180px;">
+                                    <select id="type" name="type" class="form-select">
+                                        <option th:value="''" th:selected="${type == null or type == ''}">고용 형태 선택</option>
+                                        <option th:value="'정규직'" th:selected="${type == '정규직'}">정규직</option>
+                                        <option th:value="'비정규직'" th:selected="${type == '비정규직'}">비정규직</option>
+                                        <option th:value="'기간제'" th:selected="${type == '기간제'}">기간제</option>
+                                        <option th:value="'기타'" th:selected="${type == '기타'}">기타</option>
+                                    </select>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text" name="keyword" class="form-control" placeholder="기업명, 제목, 키워드 검색" th:value="${param.keyword}">
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button type="submit" class="btn btn-primary px-4">검색</button>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="submitCrawlForm()">
+                                        <i class="bi bi-arrow-clockwise"></i> 정보 갱신
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <form id="crawlForm" th:action="@{/employment/crawl}" method="get" class="d-none"></form>
+                         
+                        <div class="text-end mb-4">
+                            <small class="text-muted"> 
+                                ※고용 정보글은 매일 새벽 3시에 자동 갱신되며, 수동갱신이 필요할 경우 정보 갱신버튼을 누르면 갱신됩니다. 
+                            </small>
+                        </div>
+
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col" th:each="post : ${employmentList}">
+                               <div class="card employment-card h-100" style="cursor:pointer;" th:attr="data-url=${post.url}">
+                                  <div class="card-body d-flex flex-column p-4">
+                                        <div>
+                                            <h6 class="card-subtitle mb-2 text-secondary">[[${post.company}]]</h6>
+                                            <h5 class="card-title fw-bold" style="min-height: 3rem;">[[${post.title}]]</h5>
+                                        </div>
+                                        
+                                        <div class="mt-auto border-top pt-3">
+                                            <p class="card-text small mb-1">
+                                                <strong class="me-1">유형:</strong>
+                                                <span th:text="${post.type}">정규직</span>
+                                            </p>
+                                            <p class="card-text small mb-0">
+                                                <strong class="me-1">기간:</strong>
+                                                <span th:text="${post.regDt} + ' ~ ' + ${post.deadline}"></span>
+                                            </p>
+                                        </div>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${#lists.isEmpty(employmentList)}" class="text-center my-5 p-5 bg-light rounded">
+                            <p class="text-muted">검색 결과가 없습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-footer" th:if="${pagination['totalPages'] > 0}">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                              <li class="page-item" th:classappend="${pagination['currentPage'] == 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/employmentList(page=${pagination['currentPage'] - 1}, type=${type}, keyword=${param.keyword})}">이전</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(pagination['startPage'], pagination['endPage'])}"
+                                    th:classappend="${i == pagination['currentPage']} ? 'active'">
+                                    <a class="page-link" th:href="@{/employmentList(page=${i}, type=${type}, keyword=${param.keyword})}" th:text="${i}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${pagination['currentPage'] == pagination['totalPages'] or pagination['totalPages'] == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/employmentList(page=${pagination['currentPage'] + 1}, type=${type}, keyword=${param.keyword})}">다음</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>	
+            </div>
+        </div>
+    </div>
+</div>
+</html>

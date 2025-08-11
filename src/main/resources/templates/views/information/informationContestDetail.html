@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/default_layout}">
+	
+	<th:block layout:fragment="content">
+		
+		<script th:src="@{/js/information/formcheck.js}"></script>
+		<form name="checkForm" id="checkForm" class="d-none">
+			<input type="hidden" name="no" id="no" th:value="${contest.contestNo}"/>
+			<input type="hidden" name="pass" id="rPass" />
+			<input type="hidden" name="pageNum" th:value="${pageNum}" />
+			<th:block th:if="${searchOption}">
+				<input type="hidden" name="type" th:value="${type}" />
+				<input type="hidden" name="keyword" th:value="${keyword}" />
+			</th:block>
+		</form>
+
+		<div class="container my-5">
+			<div class="row justify-content-center">
+				<div class="col-lg-9 col-xl-8">
+
+					<div class="text-center mb-4">
+						<h2 class="fw-bold fs-2">공모전 정보</h2>
+					</div>
+
+					<div class="card shadow-sm border-0">
+						<div class="card-body p-4 p-sm-5">
+							
+							<div class="pb-4 border-bottom">
+								<h1 class="h2 mb-3" th:text="${contest.title}">게시글 제목</h1>
+								<div class="d-flex justify-content-between text-secondary small">
+									<span>
+										<b class="fw-bold">글쓴이:</b>
+										<span th:text="${contest.userId}"></span>
+									</span>
+									<span>
+										<b class="fw-bold">작성일:</b>
+										<span>[[${#dates.format(contest.regDate, 'yyyy-MM-dd HH:mm')}]]</span>
+									</span>
+								</div>
+								<div class="d-flex justify-content-between text-secondary small mt-2">
+									<span>
+										<b class="fw-bold">주최기관:</b>
+										<span th:text="${contest.hostOrganization}"></span>
+									</span>
+									<span>
+										<b class="fw-bold">접수기간:</b>
+										<span th:text="|${contest.startDate} ~ ${contest.endDate}|"></span>
+									</span>
+								</div>
+							</div>
+
+							<div class="py-4 my-3" style="min-height: 150px;">
+								<p style="white-space: pre-wrap;" th:text="${contest.content}"></p>
+							</div>
+
+							<div class="py-4 border-top text-center">
+								<th:block th:if="${contest.file1}">
+									<img th:src="@{/files/information/{img}(img=${contest.file1})}" alt="첨부 이미지" class="img-fluid rounded">
+								</th:block>
+								<th:block th:unless="${contest.file1}">
+									<p class="text-secondary">업로드 된 이미지가 없습니다.</p>
+								</th:block>
+							</div>
+
+							<div class="p-3 bg-light rounded mt-4">
+								<div class="d-flex justify-content-between align-items-center">
+									<div class="flex-grow-1 me-3">
+										<input class="form-control" type="password" name="pass" id="pass" placeholder="수정 또는 삭제를 위해 비밀번호를 입력하세요.">
+									</div>
+									<div class="flex-shrink-0">
+										<button class="btn btn-warning" type="button" id="contestDetailUpdate">수정</button>
+										<button class="btn btn-danger"  type="button" id="contestDetailDelete">삭제</button>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="text-center mt-4">
+						<th:block th:unless="${order}">
+							<a class="btn btn-secondary px-5" th:href="@{|/information/contest?pageNum=${pageNum}|}">목록</a>
+						</th:block>						
+						<th:block th:if="${order}">
+							<a class="btn btn-secondary px-5" th:href="@{|/information/contest?pageNum=${pageNum}&order=${order}|}">목록</a>
+						</th:block>						
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</th:block>
+</html>
