@@ -69,79 +69,64 @@ $(function() {
 	
 	
 	
-	$("#typeSelector2").on('change', function() {
-		$.ajax({
-			url: "/ordercontest.ajax",
-			type: "get",
-			data : {order : $("#typeSelector2").val()},
-			dataType: "json",
-			success: function(resData) {	
-				console.log(resData);	
-				
-				// 1. 컨텐츠 및 페이지네이션 비우기
-			   $("#content").empty();
-			   $("#Row").empty();
+	$(document).on('change', "#typeSelector2", function () {
+		const urlParams = new URLSearchParams(window.location.search);
+		const pageNum = urlParams.get('pageNum') || 1;
+		const order = $("#typeSelector2").val();
+		const keyword = $("#contestSearch").val();
+		let type = "";
 
-			   // 2. 새로운 리스트 HTML 구성
-			   let html = `
-			       <div class="layout">
-			           <div class="bod-list-body">
-			               <ul class="bod-gallery-list">
-			                   <div class="swiper mySwiper">
-			                       <div class="swiper-wrapper">
-			   `;
+		if (keyword !== null && keyword.trim() !== "") {
+		    type = "title";
+		}
 
-			   resData.cList.forEach(contest => {
-			       html += `
-			           <div class="swiper-slide">
-			               <div class="swiper-area">
-			                   <div class="cover">
-			                       <div class="cover-content">
-			                           <img src="/files/information/${contest.file1}" alt="이미지를 찾을 수 없습니다.">
-			                           <div class="texts">
-			                               <strong>${contest.title}</strong>
-			                               <span>
-			                                   <i data-color="2">기한</i> ${contest.startDate.split("T")[0]} ~ ${contest.endDate}
-			                               </span>
-			                               <span>
-			                                   <i data-color="1">주최기관</i> ${contest.hostOrganization}
-			                               </span>
-			                           </div>
-			                           <a href="/information/contestDetail?no=${contest.contestNo}&pageNum=1">
-			                               <div class="cover-item">
-			                                   <div class="cover-text">
-			                                       <span class="cover-label"></span>
-			                                       <p>작성자 : ${contest.content}</p>
-												   <p>등록일 : ${contest.regDate.split("T")[0]}</p>
-			                                   </div>
-			                               </div>
-			                           </a>
-			                       </div>
-			                   </div>
-			               </div>
-			           </div>
-			       `;
-			   });
-
-			   html += `
-			                       </div>
-			                   </div>
-			               </ul>
-			           </div>
-			       </div>
-			   `;
-
-			   $("#content").append(html);
-				
-			   renderPagination(resData);
-			
-			},
-			error: function(xhr, status, error) {
-				alert("error : " + xhr.statusText + ", " + status + ", " + error);
-			}
-		});
+	    $.ajax({
+	        url: "/ordercontest.ajax",
+	        type: "get",
+	        data: { order: order },
+	        dataType: "json",
+	        success: function (resData) {
+	            console.log(resData);
+	            renderContestList(resData); 
+	        },
+	        error: function (xhr, status, error) {
+	            alert("error : " + xhr.statusText + ", " + status + ", " + error);
+	        }
+	    });
 	});
 
+
+	$(document).on('submit', "#contestSearchForm", function(e) {
+	    e.preventDefault();
+	    e.stopPropagation();
+
+	    const keyword = $("#contestSearch").val();
+	    const order = $("#typeSelector2").val();
+	    const type = keyword.trim() !== "" ? "title" : "";
+	    const pageNum = 1;
+
+	    $.ajax({
+	        url: "/ordercontest.ajax",
+	        type: "get",
+	        data: {
+	            order: order,
+	            keyword: keyword,
+	            pageNum: pageNum,
+	            type: type
+	        },
+	        dataType: "json",
+	        success: function (resData) {
+	            console.log(resData);
+	            renderContestList(resData, pageNum); 
+	        },
+	        error: function (xhr, status, error) {
+	            alert("error : " + xhr.statusText + ", " + status + ", " + error);
+	        }
+	    });
+	});
+
+
+	
 
 
 
@@ -299,16 +284,16 @@ function renderBookList(bList, pageNum, order, keyword, type) {
 
 		html += `
 			<div class="swiper-slide">
-				<div class="book-gallery-card">
+				<div class="item-gallery-card">
 					<a href="${detailUrl}">
-						<img src="/files/information/${book.file1}" alt="이미지" class="book-cover-image">
-						<div class="book-hover-overlay">
-							<div class="book-hover-content">
+						<img src="/files/information/${book.file1}" alt="이미지" class="item-cover-image">
+						<div class="item-hover-overlay">
+							<div class="item-hover-content">
 								${book.content}
 							</div>
 						</div>
 					</a>
-					<div class="book-texts">
+					<div class="item-texts">
 						<strong>${book.title}</strong>
 						<div class="metadata">
 							<span><b class="fw-bold">출판일:</b> ${book.pubDate.split("T")[0]}</span>
@@ -323,6 +308,49 @@ function renderBookList(bList, pageNum, order, keyword, type) {
 	$("#content").empty().append(html);
 	resetSwiper(); // Swiper 재초기화
 }
+
+function renderContestList(resData, pageNum = 1, order = '', keyword = '', type = '') {
+    $("#content").empty();
+    $("#Row").empty();
+
+    let html = '';
+
+    resData.cList.slice(0, 8).forEach(contest => {
+        const detailUrl = `/information/contestDetail?no=${contest.contestNo}&pageNum=${pageNum}&order=${order || ''}&keyword=${encodeURIComponent(keyword || '')}&type=${encodeURIComponent(type || '')}`;
+        const imgSrc = `/files/information/${contest.file1}`;
+        const regDate = contest.regDate.split("T")[0];
+        const startDate = contest.startDate.split("T")[0];
+        const endDate = contest.endDate;
+
+        html += `
+            <div class="swiper-slide">
+                <div class="book-gallery-card">
+                    <a href="${detailUrl}">
+                        <img src="${imgSrc}" alt="이미지" class="book-cover-image">
+                        <div class="book-hover-overlay">
+                            <div class="book-hover-content">
+                                <p>작성자: ${contest.userId}</p>
+                                <p>등록일: ${regDate}</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="book-texts">
+                        <strong>${contest.title}</strong>
+                        <div class="metadata">
+                            <span><b>기한:</b> ${startDate} ~ ${endDate}</span>
+                            <span><b>주최기관:</b> ${contest.hostOrganization}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    $("#content").empty().append(html);
+    renderPagination(resData);
+    resetSwiper();
+}
+
 
 
 function renderLectureList(lList, pageNum, order, keyword, type) {
